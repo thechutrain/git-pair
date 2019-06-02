@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -10,8 +11,6 @@ import (
 )
 
 func main() {
-	tasks := []string{"clean", "gym", "tan", "laundry"}
-
 	app := cli.NewApp()
 	app.EnableBashCompletion = true
 	app.Commands = []cli.Command{
@@ -21,21 +20,20 @@ func main() {
 			Usage:   "username email",
 			Action: func(c *cli.Context) error {
 				fmt.Printf("Action args: %#v\n", c.Args())
-				fmt.Println("completed task: ", c.Args().First())
-
+				// fmt.Println("completed task: ", c.Args().First())
 				// TODO: add username and email to users to pair with
-				actions.AddPair("merklebros", "patrick")
+				// actions.AddPair("merklebros", "patrick")
+				actions.With(c.Args())
 
 				return nil
 			},
 			BashComplete: func(c *cli.Context) {
-				// Get a list of users to pair with from a file
-
 				if c.NArg() > 0 {
 					return
 				}
-				for _, t := range tasks {
-					fmt.Println(t)
+
+				for _, user := range getCollaborators() {
+					fmt.Println(user)
 				}
 			},
 		},
@@ -47,7 +45,20 @@ func main() {
 	}
 }
 
+func getCollaborators() []string {
+	file, err := os.Open("collaborators.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-func getCollaborators() []string{} {
+	defer file.Close()
 
-} 
+	scanner := bufio.NewScanner(file)
+	var lines []string
+
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	return lines
+}

@@ -19,10 +19,6 @@ func main() {
 			Aliases: []string{"w"},
 			Usage:   "username email",
 			Action: func(c *cli.Context) error {
-				fmt.Printf("Action args: %#v\n", c.Args())
-				// fmt.Println("completed task: ", c.Args().First())
-				// TODO: add username and email to users to pair with
-				// actions.AddPair("merklebros", "patrick")
 				actions.With(c.Args())
 
 				return nil

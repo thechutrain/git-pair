@@ -9,43 +9,46 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
+// Collaborator struct represents a person who is/or has paired
+type Collaborator struct {
+	GhName string
+	Email  string
+}
+
 // With - pair with command
 func With(args cli.Args) {
-	words := strings.Fields(args[0])
-	for _, word := range words {
-		fmt.Println(word)
+	// NOTE: cli.Args combines everything after the flag to be a single argument
+	fullArg := strings.Fields(args.First())
+	// for _, word := range fullArg {
+	// 	fmt.Println(word)
+	// }
+
+	var pair *Collaborator
+	// TODO: find collaborator if there is only one user
+	// return a pointer to a collaborator struct or Panic!
+	// else case:
+	pair = &Collaborator{
+		GhName: fullArg[0],
+		Email:  fullArg[1],
 	}
-	fmt.Printf("length of words: %d\n", len(words))
 
-	// if only one argument, check that we have that user & email
-	addPair(words[0], words[1])
-
-	// if two arguments OKAY --> write to current_pair
-
+	addPair(pair)
 }
 
 // AddPair adds a new user who is pairing on the code
-func addPair(name string, email string) {
-	fmt.Printf("pairing with: %#v, %#v\n", name, email)
+func addPair(pair *Collaborator) {
+	fmt.Printf("pairing with: %#v\n", pair)
 
-	//TODO: check that the given pair is not already in the file
-
-	f, err := os.Create("current_pairs.txt")
+	f, err := os.OpenFile("current_pairs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
+	if _, err := f.Write([]byte(pair.GhName + " " + pair.Email + "\n")); err != nil {
+		log.Fatal(err)
+	}
 
-	_, err = f.WriteString("hi there")
+	err = f.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
-	// fmt.Println(l)
-	defer f.Close()
-
-	// newPair := []byte(name + email)
-	// err := ioutil.WriteFile("/currently_pairing.txt", newPair, 0644)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 }

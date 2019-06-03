@@ -15,9 +15,9 @@ func main() {
 	app.EnableBashCompletion = true
 	app.Commands = []cli.Command{
 		{
-			Name:    "with",
-			Aliases: []string{"w"},
-			Usage:   "username email",
+			Name: "with",
+			// Aliases: []string{"w"},
+			Usage: "username email",
 			Action: func(c *cli.Context) error {
 				actions.With(c.Args())
 
@@ -31,6 +31,13 @@ func main() {
 				for _, user := range getCollaborators() {
 					fmt.Println(user)
 				}
+			},
+		},
+		{
+			Name: "status",
+			Action: func(c *cli.Context) error {
+				actions.Status()
+				return nil
 			},
 		},
 	}

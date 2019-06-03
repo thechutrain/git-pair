@@ -3,7 +3,6 @@ package actions
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -72,10 +71,4 @@ func isPairing(filename string, pair *Collaborator) bool {
 	}
 
 	return false
-}
-
-func check(e error) {
-	if e != nil {
-		log.Fatal(e)
-	}
 }

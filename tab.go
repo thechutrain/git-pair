@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/pkg/errors"
 	"github.com/thechutrain/tabcompletion/actions"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -38,6 +39,13 @@ func main() {
 			Action: func(c *cli.Context) error {
 				actions.Remove(c.Args().First())
 				return nil
+			},
+		},
+		{
+			Name: "init",
+			Action: func(c *cli.Context) error {
+				err := actions.Init()
+				return errors.Wrap(err, "could not initialize a new pear project")
 			},
 		},
 		{

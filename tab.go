@@ -34,6 +34,13 @@ func main() {
 			},
 		},
 		{
+			Name: "remove",
+			Action: func(c *cli.Context) error {
+				actions.Remove(c.Args().First())
+				return nil
+			},
+		},
+		{
 			Name: "status",
 			Action: func(c *cli.Context) error {
 				actions.Status()

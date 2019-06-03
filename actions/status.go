@@ -26,19 +26,20 @@ func Status() {
 		pairs = append(pairs, &Collaborator{GhName: words[0], Email: words[1]})
 	}
 
-
 	switch len(pairs) {
 	case 0:
 		fmt.Println("You are not currently pairing with anyone")
-	case 1: 
+	case 1:
 		fmt.Println("You are currently pairing with 1 person:")
-		// for pair in range pairs{
-		// 	fmt.Println(:"")
-		}
+	default:
+		fmt.Printf("You are currenlty pairing with %d people:\n", len(pairs))
 	}
-	// if len(pairs) == 0 {
-	// 	fmt.Println("Your are not currently pairing with anyone")
-	// } else if (len(pairs)) {
-	// 	fmt.Println("You are currently pairing with %d p")
-	// }
+
+	for i, currPair := range pairs {
+		fmt.Printf("(%d) %s\n", i, currPair.GhName)
+	}
+
+	if len(pairs) > 0 {
+		fmt.Printf("To remove a collaborator enter: \"pair remove [index]\"\n")
+	}
 }

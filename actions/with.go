@@ -20,9 +20,6 @@ type Collaborator struct {
 func With(args cli.Args) {
 	// NOTE: cli.Args combines everything after the flag to be a single argument
 	fullArg := strings.Fields(args.First())
-	// for _, word := range fullArg {
-	// 	fmt.Println(word)
-	// }
 
 	var pair *Collaborator
 	// TODO: find collaborator if there is only one user
@@ -38,42 +35,47 @@ func With(args cli.Args) {
 
 // AddPair adds a new user who is pairing on the code
 func addPair(pair *Collaborator) {
-	isPairing("current_pairs.txt", pair)
-
 	fmt.Printf("Collaborator: %#v\n", pair)
+
+	pairExists := isPairing("current_pairs.txt", pair)
+	if pairExists {
+		return
+	}
 
 	// TODO: add the project dir/ first
 	f, err := os.OpenFile("current_pairs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if _, err := f.Write([]byte(pair.GhName + " " + pair.Email + "\n")); err != nil {
-		log.Fatal(err)
-	}
+	check(err)
+
+	_, err = f.Write([]byte(pair.GhName + " " + pair.Email + "\n"))
+	check(err)
 
 	err = f.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 }
 
 // isPairing checks to see if a collaborator is pairing or not
 func isPairing(filename string, pair *Collaborator) bool {
 	f, err := os.OpenFile(filename, os.O_CREATE|os.O_RDONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
+
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 
+	pairStr := pair.GhName + " " + pair.Email
 	for scanner.Scan() {
-		pairStr := scanner.Text()
-		fmt.Println(pairStr)
+		userStr := scanner.Text()
+		if userStr == pairStr {
+			return true
+		}
 	}
 
 	return false
+}
+
+func check(e error) {
+	if e != nil {
+		log.Fatal(e)
+	}
 }

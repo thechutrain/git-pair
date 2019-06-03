@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -37,8 +38,11 @@ func With(args cli.Args) {
 
 // AddPair adds a new user who is pairing on the code
 func addPair(pair *Collaborator) {
-	fmt.Printf("pairing with: %#v\n", pair)
+	isPairing("current_pairs.txt", pair)
 
+	fmt.Printf("Collaborator: %#v\n", pair)
+
+	// TODO: add the project dir/ first
 	f, err := os.OpenFile("current_pairs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
@@ -51,4 +55,25 @@ func addPair(pair *Collaborator) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// isPairing checks to see if a collaborator is pairing or not
+func isPairing(filename string, pair *Collaborator) bool {
+	f, err := os.OpenFile(filename, os.O_CREATE|os.O_RDONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for scanner.Scan() {
+		pairStr := scanner.Text()
+		fmt.Println(pairStr)
+	}
+
+	return false
 }

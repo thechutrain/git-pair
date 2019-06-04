@@ -15,8 +15,10 @@ func main() {
 	// if args is prepare-commit-msg
 	prepareCommit := len(os.Args) > 1 && os.Args[1] == "prepare-commit-msg"
 	if prepareCommit {
-		fmt.Println("YO0000u are going to prepare commit msg!!!")
-		actions.PrepareCommitMsg(os.Args[2:])
+		if len(os.Args) < 3 {
+			log.Fatal("Invalid number of arguments for prepare commit msg func")
+		}
+		actions.PrepareCommitMsg(os.Args[2])
 		return
 	}
 

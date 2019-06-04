@@ -9,7 +9,7 @@ Co-authored-by: alan <alan@email.com>
 #
 ```
 
-```
+```sh
 #!/bin/sh
 set -e
 
@@ -39,4 +39,29 @@ cat $CURR_PAIR_FILE | awk 'BEGIN{FS=" "} {print "Co-authored-by: " $1 " <" $2 ">
 cat $TEMP | sed "/^Co-authored-by/d" >> $1
 
 rm $TEMP
+```
+
+## Saving current pairs
+
+- you can use the `.git/config` file
+- use `git config` commands to modify these commands:
+  - http://craig-russell.co.uk/2011/08/24/git-tip-custom-config-parameters.html#.XPaUBtNKiV4
+
+```
+git config pair.coauthor namehere // adds a new coauthor
+git config --get-all pair.coauthor // gets all the coauthors
+git config --unset pair.coauthor nameofpair // removes a single user
+git config --unset-all pair.coauthor // removes all users
+```
+
+## Misc reading arguments from a shell script
+
+```sh
+#!/bin/sh
+
+if [ -z $1 ]; then
+    echo empty
+else
+    echo not empty
+fi
 ```

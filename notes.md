@@ -48,6 +48,9 @@ rm $TEMP
   - http://craig-russell.co.uk/2011/08/24/git-tip-custom-config-parameters.html#.XPaUBtNKiV4
 
 ```
+// Note throws an error that "key does not contain a section" if you try to get something that doesnt exist!
+
+
 git config pair.coauthor namehere // adds a new coauthor
 git config --get-all pair.coauthor // gets all the coauthors
 git config --unset pair.coauthor nameofpair // removes a single user

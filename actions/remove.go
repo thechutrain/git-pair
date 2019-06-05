@@ -1,20 +1,7 @@
 package actions
 
-import (
-	"bytes"
-	"os/exec"
-)
-
 // Remove a collaborator that you are currently pairing with
 func Remove(index string) {
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd := exec.Command("git", []string{"config", "pair"}...)
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-
-	err := cmd.Run()
-	check(err)
 
 	// gitOutput := out.String()
 	// for _, line := range gitOutput {

@@ -7,11 +7,18 @@ import (
 	"os"
 
 	"github.com/pkg/errors"
-	"github.com/thechutrain/tabcompletion/actions"
+	"github.com/thechutrain/git-pair/actions"
 	"gopkg.in/urfave/cli.v1"
 )
 
 func main() {
+	// TESTING
+	if len(os.Args) == 1 {
+		// fmt.Print("printing current pairs ...")
+		actions.CurrPairs()
+		return
+	}
+
 	// if args is prepare-commit-msg
 	prepareCommit := len(os.Args) > 1 && os.Args[1] == "prepare-commit-msg"
 	if prepareCommit {

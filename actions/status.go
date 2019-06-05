@@ -18,12 +18,12 @@ func Status() {
 		return
 	}
 
-	var pairs []*Collaborator
+	var pairs []*Coauthor
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
 		words := strings.Split(line, " ")
-		pairs = append(pairs, &Collaborator{GhName: words[0], Email: words[1]})
+		pairs = append(pairs, &Coauthor{Name: words[0], Email: words[1]})
 	}
 
 	switch len(pairs) {
@@ -36,7 +36,7 @@ func Status() {
 	}
 
 	for i, currPair := range pairs {
-		fmt.Printf("(%d) %s\n", i, currPair.GhName)
+		fmt.Printf("(%d) %s\n", i, currPair.Name)
 	}
 
 	if len(pairs) > 0 {

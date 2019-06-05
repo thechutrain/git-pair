@@ -51,7 +51,7 @@ rm $TEMP
 // Note throws an error that "key does not contain a section" if you try to get something that doesnt exist!
 
 
-git config pair.coauthor namehere // adds a new coauthor
+git config --add pair.coauthor namehere // you need the --add flag in order to not overwrite prev val
 git config --get-all pair.coauthor // gets all the coauthors
 git config --unset pair.coauthor nameofpair // removes a single user
 git config --unset-all pair.coauthor // removes all users

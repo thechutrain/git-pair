@@ -3,95 +3,91 @@ package actions
 import (
 	"bufio"
 	"bytes"
-	"encoding/base64"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"os/exec"
 	"regexp"
+
+	"github.com/pkg/errors"
 )
 
-// TODO: should be a new package?
+// Coauthor represents a coauthor
+type Coauthor struct {
+	Name  string
+	Email string
+}
 
-// hasSection() checks the config file to see if the section exists
-func hasSection() (bool, error) {
+// containsSection() checks the config file to see if the section exists
+func containsSection(filepath string, sectionName string) (bool, error) {
 	// TODO: file resolution!
-	file, err := os.Open(".git/config")
+	file, err := os.Open(filepath)
 	if err != nil {
-		return false, err
+		errMsg := "Could not open file/filepath: " + filepath
+		return false, errors.Wrap(err, errMsg)
 	}
 
 	scanner := bufio.NewScanner(file)
-	re := regexp.MustCompile("^\\[pair\\]")
+	re := regexp.MustCompile("^\\[" + sectionName + "\\]")
 	for scanner.Scan() {
 		line := scanner.Text()
-		fmt.Println(line)
 		match := re.MatchString(line)
 		if match {
-			return true, err
+			return true, nil
 		}
 	}
 
-	return false, err
+	return false, nil
 }
 
 // CurrPairs gets the current pairs from .git/config
-func CurrPairs() ([]string, error) {
-	// TODO: make helper func that checks if [pair] exists in .git/config
-	currPairs := []string{}
+func CurrPairs() ([]Coauthor, error) {
+	coAuthors := []Coauthor{}
+	// TODO: get the correct string path where .git/ dir exists
+	// exists, _ := containsPairSection("../git-pair/.git/config")
+	exists, err := containsSection(".git/config", "pair")
+	if err != nil {
+		return coAuthors, err
+	}
+
+	// Case: if [pair] section does not exist, assume there are no coauthors
+	if !exists {
+		fmt.Println("[pair] section does not exist. So no coauthors")
+		return coAuthors, nil
+	}
 
 	var out bytes.Buffer
 	var stderr bytes.Buffer
-	cmd := exec.Command("git", []string{"config", "--get-all", "pair"}...)
+	cmd := exec.Command("git", []string{"config", "--get-all", "pair.coauthor"}...)
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
 
-	// Note: using teh cmd.Stdout and cmd.Stderr to check for errors
-	err := cmd.Run() // Note: subprocess
-
-	// Note: git config will throw an error if the "pair" section is missing
-	// Case: no current pairs
-	// fmt.Println(stderr.String())
-	if stderr.String() == "error: key does not contain a section: pair" {
-		return nil, currPairs
+	// // Note: using teh cmd.Stdout and cmd.Stderr to check for errors
+	err = cmd.Run() // Note: subprocess
+	if err != nil {
+		return coAuthors, errors.Wrap(err, "Failed to execute \"git config --get-all pair.coauthor\" command")
 	}
 
-	// dec := base64.NewDecoder(base64.StdEncoding, &out)
-	// io.Copy(os.Stdout, dec)
-	return nil, currPairs
+	return coAuthors, nil
 }
 
 // createPairSection creates the "pair" section in the .git/config directory so it doesn't throw an error
-func createPairSection() {
+func addPairSection() error {
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd := exec.Command("git", []string{"config", "pair.coauthor"}...)
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
 
-	if len(stderr.String()) != 0 {
-		fmt.Println("stderr was true -- before")
-	}
-
-	if len(out.String()) != 0 {
-		fmt.Println("stderr was true -- before ")
-	}
-
 	err := cmd.Run()
+	if err != nil {
+		return errors.Wrap(err, "Failed to exec \"git config pair.coauthor\"")
+	}
+
+	fmt.Println(out.String())
 	fmt.Println(stderr.String())
 
-	if len(stderr.String()) != 0 {
-		fmt.Println("stderr was true ")
-	}
-
-	if len(out.String()) != 0 {
-		fmt.Println("stderr was true ")
-	}
-	check(err)
-
-	dec := base64.NewDecoder(base64.StdEncoding, &out)
-	io.Copy(os.Stdout, dec)
+	return nil
 }
 
 func check(e error) {

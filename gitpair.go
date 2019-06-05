@@ -14,8 +14,14 @@ import (
 func main() {
 	// TESTING
 	if len(os.Args) == 1 {
-		// fmt.Print("printing current pairs ...")
-		actions.CurrPairs()
+		_, err := actions.CurrPairs()
+		if err != nil {
+			fmt.Println(err)               // prints out my custom message
+			fmt.Println(errors.Cause(err)) // default userful error message
+		}
+
+		// e := errors.Wrap(errors.New("this err"), "test error")
+		// fmt.Println(errors.Cause(e))
 		return
 	}
 

@@ -64,6 +64,7 @@ func CurrPairs() ([]Coauthor, error) {
 
 	// // Note: using teh cmd.Stdout and cmd.Stderr to check for errors
 	err = cmd.Run() // Note: subprocess
+
 	if err != nil {
 		return coAuthors, errors.Wrap(err, "Failed to execute \"git config --get-all pair.coauthor\" command")
 	}

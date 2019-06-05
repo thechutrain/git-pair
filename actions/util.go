@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/base64"
 	"fmt"
@@ -8,9 +9,32 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 )
 
 // TODO: should be a new package?
+
+// hasSection() checks the config file to see if the section exists
+func hasSection() (bool, error) {
+	// TODO: file resolution!
+	file, err := os.Open(".git/config")
+	if err != nil {
+		return false, err
+	}
+
+	scanner := bufio.NewScanner(file)
+	re := regexp.MustCompile("^\\[pair\\]")
+	for scanner.Scan() {
+		line := scanner.Text()
+		fmt.Println(line)
+		match := re.MatchString(line)
+		if match {
+			return true, err
+		}
+	}
+
+	return false, err
+}
 
 // CurrPairs gets the current pairs from .git/config
 func CurrPairs() ([]string, error) {

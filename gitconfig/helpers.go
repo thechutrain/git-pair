@@ -57,7 +57,13 @@ func GitDir() (string, error) {
 }
 
 // ContainsSection checks if pair section exists
-func ContainsSection(filepath string) (bool, error) {
+func ContainsSection() (bool, error) {
+	filepath, err := GitDir()
+	if err != nil {
+		return false, err
+	}
+	filepath = filepath + "/config"
+
 	file, err := os.Open(filepath)
 	if err != nil {
 		errMsg := "Could not open file/filepath: " + filepath

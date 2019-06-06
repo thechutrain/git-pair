@@ -1,5 +1,9 @@
 package gitconfig
 
+import (
+	"strings"
+)
+
 // SectionName will be the section header in the .git/config file
 const SectionName = "pair"
 
@@ -12,12 +16,30 @@ type Coauthor struct {
 // CurrPairs gets the current co-authors you are pairing with
 func CurrPairs() ([]*Coauthor, error) {
 	coauthors := []*Coauthor{}
-	// pathToConfig :=  ootDir()
-	// sectionExists, err := containsSection()
-	// check(err)
 
-	// check if there pair section
+	exists, err := ContainsSection()
+	if err != nil {
+		return coauthors, err
+	}
 
+	if !exists {
+		return coauthors, nil
+	}
+
+	// get git config --get-all pair.coauthor
+	output, err := RunCmd([]string{"git", "config", "--get-all", SectionName + ".coauthor"})
+	splitOutput := strings.Split(output, "\n")
+	// ["anush a@email.com"]
+	// [&Coauthor{Name: "anush"}]
+
+	for _, line := range splitOutput {
+		lineSlice := strings.Split(line, " ")
+		//TODO: remove brackets (if any) from email
+		// TODO: check line valid input
+		coauthor := Coauthor{Name: lineSlice[0], Email: lineSlice[1]}
+		coauthors = append(coauthors, &coauthor)
+
+	}
 	return coauthors, nil
 }
 

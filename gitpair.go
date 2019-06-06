@@ -17,18 +17,20 @@ func main() {
 	if len(os.Args) == 1 {
 		// _, err := actions.CurrPairs()
 
-		filePath, err := gitconfig.GitDir()
-		var completeFilePath = filePath + "/config"
-		// fmt.Println(completeFilePath)
+		// filePath, err := gitconfig.GitDir()
+		// var completeFilePath = filePath + "/config"
+		// // fmt.Println(completeFilePath)
+		coauthors, err := gitconfig.CurrPairs()
+		fmt.Printf("Coauthors: %#v", coauthors[0])
 
-		sectionExists, err := gitconfig.ContainsSection(completeFilePath)
+		// sectionExists, err := gitconfig.ContainsSection(completeFilePath)
 
 		if err != nil {
 			fmt.Println(err)               // prints out my custom message
 			fmt.Println(errors.Cause(err)) // default userful error message
 		}
 
-		fmt.Println(sectionExists)
+		// fmt.Println(sectionExists)
 		// e := errors.Wrap(errors.New("this err"), "test error")
 		// fmt.Println(errors.Cause(e))
 		return

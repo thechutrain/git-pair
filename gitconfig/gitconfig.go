@@ -1,7 +1,7 @@
 package gitconfig
 
 // SectionName will be the section header in the .git/config file
-const SectionName = "_pair"
+const SectionName = "pair"
 
 // Coauthor represents a coauthor
 type Coauthor struct {
@@ -12,6 +12,11 @@ type Coauthor struct {
 // CurrPairs gets the current co-authors you are pairing with
 func CurrPairs() ([]*Coauthor, error) {
 	coauthors := []*Coauthor{}
+	// pathToConfig :=  ootDir()
+	// sectionExists, err := containsSection()
+	// check(err)
+
+	// check if there pair section
 
 	return coauthors, nil
 }

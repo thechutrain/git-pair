@@ -8,18 +8,27 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/thechutrain/git-pair/actions"
+	"github.com/thechutrain/git-pair/gitconfig"
 	"gopkg.in/urfave/cli.v1"
 )
 
 func main() {
 	// TESTING
 	if len(os.Args) == 1 {
-		_, err := actions.CurrPairs()
+		// _, err := actions.CurrPairs()
+
+		filePath, err := gitconfig.GitDir()
+		var completeFilePath = filePath + "/config"
+		// fmt.Println(completeFilePath)
+
+		sectionExists, err := gitconfig.ContainsSection(completeFilePath)
+
 		if err != nil {
 			fmt.Println(err)               // prints out my custom message
 			fmt.Println(errors.Cause(err)) // default userful error message
 		}
 
+		fmt.Println(sectionExists)
 		// e := errors.Wrap(errors.New("this err"), "test error")
 		// fmt.Println(errors.Cause(e))
 		return

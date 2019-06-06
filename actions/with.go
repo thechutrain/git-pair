@@ -4,27 +4,26 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
-
-	"gopkg.in/urfave/cli.v1"
 )
 
 // With - pair with command
-func With(args cli.Args) {
-	// NOTE: cli.Args combines everything after the flag to be a single argument
-	fullArg := strings.Fields(args.First())
+// func With(args cli.Args) {
+// 	// NOTE: cli.Args combines everything after the flag to be a single argument
+// 	fullArg := strings.Fields(args.First())
 
-	var newPair *Coauthor
-	// TODO: find collaborator if there is only one user
-	// return a pointer to a collaborator struct or Panic!
-	// else case:
-	newPair = &Coauthor{
-		Name:  fullArg[0],
-		Email: fullArg[1],
-	}
+// 	var newPair *Coauthor
+// 	// TODO: find collaborator if there is only one user
+// 	// return a pointer to a collaborator struct or Panic!
+// 	// else case:
+// 	newPair = &Coauthor{
+// 		Name:  fullArg[0],
+// 		Email: fullArg[1],
+// 	}
 
-	addPair(newPair)
-}
+// 	addPair(newPair)
+// }
+
+// func Add()
 
 // AddPair adds a new user who is pairing on the code
 func addPair(pair *Coauthor) {

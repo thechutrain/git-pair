@@ -33,6 +33,9 @@ func RunCmd(cmdArgs []string) (string, error) {
 	cmd.Stdout = &out
 	err := cmd.Run()
 
+	//fmt.Printf("cmdArgs: %#v\n", strings.Join(cmdArgs, " "))
+	//fmt.Printf("Out: %s\n", out.String())
+
 	if err != nil {
 		// Question: should we Wrap this error if it will be wrapped where its caught
 		return "", errors.Wrap(err, "Failed to run \"RunCmd()\" with arguments "+strings.Join(cmdArgs, ", "))

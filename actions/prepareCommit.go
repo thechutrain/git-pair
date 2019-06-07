@@ -9,11 +9,21 @@ import (
 )
 
 // PrepareCommitMsg prepares the commit message
-func PrepareCommitMsg(fileName string) {
+// gets called by git arg [command, preparecommitmsg, $1, $2], where $1 is the filename of the temp git commit file?
+func PrepareCommitMsg(args []string) {
+	fmt.Printf("PrepareCommitMsg called!!!")
+	fileName := args[2]
+	fmt.Println(fileName)
+	if len(args) < 3 {
+		log.Fatal("Invalid number of arguments for prepare commit msg func")
+	} else {
+		return
+	}
+
 	lines := readLines(fileName)
 
 	if !containsCoAuthor(lines) {
-		coauthors := []string{"Co-authored-by: foobar"}
+		coauthors := []string{"Co-authored-by: foobar asdf \n" + fileName}
 		updateCommitMsg := addCoAuthors(lines, coauthors)
 		writeLines(fileName, updateCommitMsg)
 	}
@@ -83,7 +93,7 @@ func addCoAuthors(lines []string, coauthors []string) []string {
 	updateCommitMsg := make([]string, 0)
 
 	updateCommitMsg = append(updateCommitMsg, lines[:firstLineOfComment]...)
-	updateCommitMsg = append(updateCommitMsg, "# Added by 🐙")
+	updateCommitMsg = append(updateCommitMsg, "# Added by git-pair 🍐")
 	updateCommitMsg = append(updateCommitMsg, coauthors...)
 	updateCommitMsg = append(updateCommitMsg, "")
 	updateCommitMsg = append(updateCommitMsg, lines[firstLineOfComment:]...)

@@ -9,21 +9,20 @@ import (
 )
 
 // PrepareCommitMsg prepares the commit message
-// gets called by git arg [command, preparecommitmsg, $1, $2], where $1 is the filename of the temp git commit file?
+// gets called by git arg [command, preparecommitmsg, $1, $2, $3]
+//  where $1 is the filename of the temp git commit file?
 func PrepareCommitMsg(args []string) {
 	fmt.Printf("PrepareCommitMsg called!!!")
 	fileName := args[2]
 	fmt.Println(fileName)
 	if len(args) < 3 {
 		log.Fatal("Invalid number of arguments for prepare commit msg func")
-	} else {
-		return
 	}
 
 	lines := readLines(fileName)
 
 	if !containsCoAuthor(lines) {
-		coauthors := []string{"Co-authored-by: foobar asdf \n" + fileName}
+		coauthors := []string{"Co-authored-by: 🤖 "}
 		updateCommitMsg := addCoAuthors(lines, coauthors)
 		writeLines(fileName, updateCommitMsg)
 	}

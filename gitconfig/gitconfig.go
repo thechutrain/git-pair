@@ -1,17 +1,9 @@
 package gitconfig
 
 import (
-	"fmt"
+	"log"
 	"strings"
 )
-
-// SectionName will be the section header in the .git/config file
-const SectionName = "pair"
-
-// RunGitConfigCmd - does things
-func RunGitConfigCmd(flags string, val string) (string, error) {
-	return RunCmd([]string{"git", "config", flags, "pair.coauthor", val})
-}
 
 // Coauthor represents a coauthor
 type Coauthor struct {
@@ -19,45 +11,44 @@ type Coauthor struct {
 	Email string
 }
 
+// CmdError - represents an error from making a bash command
+type CmdError struct {
+	Message  string // error description
+	ExitCode int    // exit code
+}
+
 // CurrPairs gets the current co-authors you are pairing with
 // func CurrPairs() ([]*Coauthor, error) {
-func CurrPairs() ([]string, error) {
+func CurrPairs() ([]string, CmdError) {
 	coauthors := []string{}
 
 	exists, err := ContainsSection()
-	if err != nil || !exists {
-		return coauthors, err
+	if err != nil {
+		return coauthors, CmdError{}
+	}
+	if !exists {
+		return coauthors, CmdError{}
 	}
 
-	output, err := RunGitConfigCmd("--get-all", "")
-	fmt.Printf("%s\n", output)
+	output, _ := RunGitConfigCmd("--get-all", "")
 	splitOutput := strings.Split(output, "\n")
 
-	return splitOutput, nil
-
-	// TODO: make a helper function that takes string of coauthors and makes struct? validates
-	// for _, line := range splitOutput {
-	// 	lineSlice := strings.Split(line, " ")
-	// 	coauthor := Coauthor{Name: lineSlice[0], Email: lineSlice[1]}
-	// 	coauthors = append(coauthors, &coauthor)
-	// }
-
-	// return coauthors, nil
+	return splitOutput, CmdError{}
 }
 
-// AddPair adds a new
-func AddPair(pairStr string) error {
+// AddPair adds a new coauthor line only if its unique
+// pairStr is in the format of "name <email>"
+func AddPair(pairStr string) CmdError {
 	// TODO: validate pairStr
-	// pairStr ="name <email>"
 
-	RunGitConfigCmd("--unset-all", pairStr)
-	_, err := RunGitConfigCmd("--add", pairStr)
+	RunGitConfigCmd("--unset-all", pairStr) // Note: prevents the addition of  duplicate keys
+	_, cmdErr := RunGitConfigCmd("--add", pairStr)
 
-	return err
+	return cmdErr
 }
 
 // RemovePair removes a single coauthor
-func RemovePair(pairStr string) bool {
+func RemovePair(pairStr string) (bool, CmdError) {
 	pairsBefore, _ := CurrPairs()
 
 	numWords := len(strings.Split(pairStr, " "))
@@ -71,12 +62,25 @@ func RemovePair(pairStr string) bool {
 	RunGitConfigCmd("--unset-all", pairStr)
 	pairsAfter, _ := CurrPairs()
 
-	fmt.Printf("%s\n%s", (pairsAfter), (pairsBefore))
-	return bool(len(pairsBefore) > len(pairsAfter))
+	// fmt.Printf("%s\n%s", (pairsAfter), (pairsBefore))
+	return bool(len(pairsBefore) > len(pairsAfter)), CmdError{}
 }
 
 // RemoveAllPairs removes all the coauthors
-func RemoveAllPairs() (bool, error) {
-	_, err := RunGitConfigCmd("--unset-all", "")
-	return false, err
+func RemoveAllPairs() (bool, CmdError) {
+	_, cmdErr := RunGitConfigCmd("--unset-all", "")
+	return false, cmdErr
+}
+
+// CheckError returns a boolean of whether there was an error that should prevent you from proceeding or not
+// QUESTION: should we exit the program here?
+func CheckCmdError(err CmdError) {
+	switch err.ExitCode {
+	case 0:
+	case 128:
+		// Note: what if there are some pair commands we want to run? pair ls?
+		log.Fatal(`Cannot run "$pair" command outside of a git repository`)
+	default:
+		log.Fatalf("Unknown exit code of: %d\n Error message: %s", err.ExitCode, err.Message)
+	}
 }

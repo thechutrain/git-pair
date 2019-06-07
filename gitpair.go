@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/pkg/errors"
 	"github.com/thechutrain/git-pair/actions"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -23,6 +22,7 @@ func main() {
 	}
 
 	app := cli.NewApp()
+	// app.HelpName := "Hi Im help"
 	app.EnableBashCompletion = true
 	app.Commands = []cli.Command{
 		{
@@ -46,23 +46,27 @@ func main() {
 			},
 		},
 		{
-			Name: "remove",
+			Name:    "remove",
+			Aliases: []string{"rm"},
 			Action: func(c *cli.Context) error {
-				actions.Remove(c.Args().First())
+				actions.Remove(c.Args())
 				return nil
 			},
 		},
 		{
-			Name: "init",
+			Name:    "stop",
+			Aliases: []string{"reset"},
 			Action: func(c *cli.Context) error {
-				err := actions.Init()
-				return errors.Wrap(err, "could not initialize a new pear project")
+				actions.RemoveAll(c.Args())
+				return nil
 			},
 		},
 		{
-			Name: "status",
+			Name:    "status",
+			Aliases: []string{"s"},
 			Action: func(c *cli.Context) error {
-				actions.Status()
+				actions.Status(c.Args())
+
 				return nil
 			},
 		},

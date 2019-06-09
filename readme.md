@@ -23,25 +23,26 @@ PROG=pair source $PATH/to/autocomplete/bash_autocomplete
 To initiate a pairing session just type:
 
 ```
-$pair add GITHUB_USERNAME GITHUB_EMAIL
+pair add GITHUB_USERNAME GITHUB_EMAIL
 ```
 
 To stop pairing with a single user:
 
 ```
-$ pair remove GITHUB_USERNAME
+pair remove [name]
 ```
 
 To stop pairing with everyone:
 
 ```
-$ pair stop
+pair reset
+pair stop
 ```
 
 To see if you are currently pairing with anyone:
 
 ```
-$ pair status
+pair status
 ```
 
 # Description
@@ -54,7 +55,7 @@ Example:
 wip - git commit message, pairing is fun!
 
 # Added by 🍐
-Co-authored-by: pairbot <pairbot@email.com>
+Co-authored-by: pairpal <pair-pal@email.com>
 
 # Please enter the commit message for your changes. Lines starting
 # with '#' will be ignored, and an empty message aborts the commit.

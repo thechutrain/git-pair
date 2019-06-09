@@ -24,7 +24,7 @@ func main() {
 		{
 			Name: "init",
 			Action: func(c *cli.Context) error {
-				actions.Init()
+				actions.Init(c.Args())
 
 				return nil
 			},

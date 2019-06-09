@@ -12,7 +12,8 @@ import (
 )
 
 // Init - creates the prepare-commit-msg hooks
-func Init() error {
+func Init(args cli.Args) error {
+	fmt.Printf("pair init args: %#v", args)
 	gitDir, cmdErr := gitconfig.GitDir()
 	gitconfig.CheckCmdError(cmdErr)
 
@@ -20,22 +21,24 @@ func Init() error {
 	hookFile := hooksDir + "/prepare-commit-msg"
 
 	if _, err := os.Stat(hookFile); err == nil {
-		// path exists; alert user that its been initialized?
-		// TODO: if given the --force flag rewrite it, else print that already has a
-		// prepare-commit-msg hook
-		fmt.Println("File prepare-commit-msg EXISTS")
+		// Case: path exists & don't reinitialize unless there is the force argument
+		if args[0] == "force" {
+			_ = makePrepareCommitHook(hookFile)
+			fmt.Printf("Forced a reinitialization of the prepare-commit-msg hook\n")
+		} else {
+			fmt.Printf("Git-pair session is already initialized for this project")
+		}
 	} else if os.IsNotExist(err) {
-		// file does not exist; make the new script
-		fmt.Println("Prepare-commit-msg does not exist")
+		// Case: "prepare-commit-msg" hook does not exit, make one
+		fmt.Printf("Prepare-commit-msg does not exist\nMaking one ...")
 
+		_ = makePrepareCommitHook(hookFile)
 	}
-
-	makePrepareCommitHook(hookFile)
 
 	return nil
 }
 
-func makePrepareCommitHook(filePath string) {
+func makePrepareCommitHook(filePath string) error {
 	// Note: all the file permissions are 755
 	fmt.Printf("filepath of makePrepareCommithook: %s", filePath)
 
@@ -47,12 +50,12 @@ func makePrepareCommitHook(filePath string) {
 	gitpair _prepare-commit-msg $@ #adds all of the arguments in bash
 		`)
 
-	fmt.Println(hookScript)
-
 	err := ioutil.WriteFile(filePath, hookScript, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	return nil
 }
 
 // Add - adds a new pair

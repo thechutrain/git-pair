@@ -26,8 +26,10 @@ const sectionKey = sectionName + "." + "coauthor"
 // ContainsSection checks if pair section exists
 func ContainsSection() (bool, error) {
 	filepath, cmderr := GitDir()
-	if cmderr.ExitCode == 128 {
-		return false, errors.New("You are not in a git repository")
+	// Question: now that Im return error instead of cmderrors
+	// can't just pass a regular error, need to pass a CmdError type
+	if CheckCmdError(cmderr) != nil {
+		return false, cmderr
 	}
 
 	filepath = filepath + "/config"
@@ -50,27 +52,37 @@ func ContainsSection() (bool, error) {
 }
 
 // GitDir gets the file path to the where the git dir is located
-func GitDir() (string, CmdError) {
+func GitDir() (string, error) {
+	out, cmderr := RootDir()
+	if CheckCmdError(cmderr) != nil {
+		return "", cmderr
+	}
+	out = out + "/.git"
+
+	return out, nil
+}
+
+func RootDir() (string, error) {
 	//TODO: change name to getGitDirectory
 	// Note:You can use: git rev-parse --git-dir
 	out, err := RunCmd([]string{"git", "rev-parse", "--git-dir"})
 	isRelativePath := (out == ".git")
 
 	if isRelativePath {
+		// TODO: can use the filepath package to get dir instead
 		out, err = RunCmd([]string{"pwd"})
-		out = out + "/.git"
 	}
 
 	return out, err
 }
 
 // RunGitConfigCmd - Executes "git config" related commands
-func RunGitConfigCmd(flags string, val string) (string, CmdError) {
+func RunGitConfigCmd(flags string, val string) (string, error) {
 	return RunCmd([]string{"git", "config", flags, sectionKey, val})
 }
 
 // RunCmd a wrapper for exec
-func RunCmd(cmdArgs []string) (string, CmdError) {
+func RunCmd(cmdArgs []string) (string, error) {
 	if len(cmdArgs) == 0 {
 		return "", CmdError{Message: "Need at least one argument to run cmd"}
 	}
@@ -90,7 +102,7 @@ func RunCmd(cmdArgs []string) (string, CmdError) {
 		return "", cmdErr
 	}
 
-	return strings.Trim(out.String(), "\n"), CmdError{}
+	return strings.Trim(out.String(), "\n"), nil
 }
 
 // gets the exit code from a exec.Cmd

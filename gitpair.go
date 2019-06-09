@@ -11,15 +11,14 @@ import (
 )
 
 func main() {
-	// if args is prepare-commit-msg
-	prepareCommit := len(os.Args) > 1 && os.Args[1] == "prepare-commit-msg"
+	// Note: prepare-commit-msg is a func called internally so we don't want to expose it to the cli
+	prepareCommit := len(os.Args) > 1 && os.Args[1] == "_prepare-commit-msg"
 	if prepareCommit {
 		actions.PrepareCommitMsg(os.Args)
 		return
 	}
 
 	app := cli.NewApp()
-	// app.HelpName := "Hi Im help"
 	app.EnableBashCompletion = true
 	app.Commands = []cli.Command{
 		{

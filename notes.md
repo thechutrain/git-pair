@@ -68,3 +68,16 @@ else
     echo not empty
 fi
 ```
+
+## Set up
+
+Add this to your `.git/hooks/prepare-commit-msg` file
+
+```sh
+#!/bin/sh
+
+set -e
+
+# cannot alias this?
+gitpair _prepare-commit-msg $@ #adds all of the arguments in bash
+```

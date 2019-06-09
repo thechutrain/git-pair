@@ -2,6 +2,9 @@ package actions
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	"strings"
 
 	"github.com/thechutrain/git-pair/gitconfig"
@@ -10,18 +13,46 @@ import (
 
 // Init - creates the prepare-commit-msg hooks
 func Init() error {
-	// TODO:
-	hookScript := `#!/bin/sh
-set -e
+	gitDir, cmdErr := gitconfig.GitDir()
+	gitconfig.CheckCmdError(cmdErr)
 
-# Question: Can I alias gitpair command?
-# Hook from git-pair 🍐 
-gitpair _prepare-commit-msg $@ #adds all of the arguments in bash
-	`
+	hooksDir := gitDir + "/hooks"
+	hookFile := hooksDir + "/prepare-commit-msg"
+
+	if _, err := os.Stat(hookFile); err == nil {
+		// path exists; alert user that its been initialized?
+		// TODO: if given the --force flag rewrite it, else print that already has a
+		// prepare-commit-msg hook
+		fmt.Println("File prepare-commit-msg EXISTS")
+	} else if os.IsNotExist(err) {
+		// file does not exist; make the new script
+		fmt.Println("Prepare-commit-msg does not exist")
+
+	}
+
+	makePrepareCommitHook(hookFile)
+
+	return nil
+}
+
+func makePrepareCommitHook(filePath string) {
+	// Note: all the file permissions are 755
+	fmt.Printf("filepath of makePrepareCommithook: %s", filePath)
+
+	hookScript := []byte(`#!/bin/sh
+	set -e
+
+	# Question: Can I alias gitpair command?
+	# Hook from git-pair 🍐
+	gitpair _prepare-commit-msg $@ #adds all of the arguments in bash
+		`)
 
 	fmt.Println(hookScript)
 
-	return nil
+	err := ioutil.WriteFile(filePath, hookScript, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Add - adds a new pair

@@ -8,6 +8,22 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
+// Init - creates the prepare-commit-msg hooks
+func Init() error {
+	// TODO:
+	hookScript := `#!/bin/sh
+set -e
+
+# Question: Can I alias gitpair command?
+# Hook from git-pair 🍐 
+gitpair _prepare-commit-msg $@ #adds all of the arguments in bash
+	`
+
+	fmt.Println(hookScript)
+
+	return nil
+}
+
 // Add - adds a new pair
 func Add(args cli.Args) error {
 	return gitconfig.AddPair(strings.Join(args, " "))
@@ -40,5 +56,11 @@ func Status(args cli.Args) error {
 		fmt.Printf("You are not currently pairing with anyone\nTo begin pairing with a new person type:\n\t\"git pair add [name]\"\n")
 	}
 
+	return nil
+}
+
+// ================ HELPER FUNCTIONS ===============
+// checkInit - checks that the project has a prepare-commit-msg hook, that its been initialized
+func checkInit() error {
 	return nil
 }

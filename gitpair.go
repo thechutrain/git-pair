@@ -22,6 +22,14 @@ func main() {
 	app.EnableBashCompletion = true
 	app.Commands = []cli.Command{
 		{
+			Name: "init",
+			Action: func(c *cli.Context) error {
+				actions.Init()
+
+				return nil
+			},
+		},
+		{
 			Name:    "add",
 			Aliases: []string{"a"},
 			Usage:   "username <email>",

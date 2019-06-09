@@ -101,6 +101,10 @@ func CheckCmdError(err error) error {
 	if CmdError, ok := err.(CmdError); ok {
 		switch CmdError.ExitCode {
 		case 0:
+			return nil
+		case 5:
+			// Note - Ignore this error: Git config exit code if you try to access a section.key that does not exist
+			return nil
 		case 128:
 			// fmt.Printf("Exited with code: %d\n", CmdError.ExitCode)
 			log.Fatal(`Cannot run pair command outside of a git repository`)

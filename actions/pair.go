@@ -14,23 +14,22 @@ func Add(args cli.Args) error {
 }
 
 // Remove - remove
-func Remove(args cli.Args) bool {
-	//TODO: all these func should return CmdErr
+func Remove(args cli.Args) error {
 	_, cmdErr := gitconfig.RemovePair(strings.Join(args, " "))
 	gitconfig.CheckCmdError(cmdErr)
 
-	return true
+	return cmdErr
 }
 
 // RemoveAll - removes all
 func RemoveAll(args cli.Args) error {
 	_, cmdErr := gitconfig.RemoveAllPairs()
 	gitconfig.CheckCmdError(cmdErr)
-	return nil
+	return cmdErr
 }
 
 // Status - status status status status status status status status status status status
-func Status(args cli.Args) {
+func Status(args cli.Args) error {
 	pairs, _ := gitconfig.CurrPairs()
 
 	if len(pairs) > 0 {
@@ -40,4 +39,6 @@ func Status(args cli.Args) {
 	} else {
 		fmt.Printf("You are not currently pairing with anyone\nTo begin pairing with a new person type:\n\t\"git pair add [name]\"\n")
 	}
+
+	return nil
 }

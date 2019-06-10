@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"strings"
+
+	"github.com/thechutrain/git-pair/arrays"
 )
 
 // Coauthor represents a coauthor
@@ -28,7 +30,6 @@ func CurrPairs() ([]string, error) {
 	coauthors := []string{}
 
 	exists, err := ContainsSection()
-	fmt.Printf("err from contains section, %#v \n", err)
 	if CheckCmdError(err) != nil {
 		return coauthors, nil
 	}
@@ -41,6 +42,9 @@ func CurrPairs() ([]string, error) {
 	CheckCmdError(err)
 
 	splitOutput := strings.Split(output, "\n")
+	splitOutput = arrays.Filter(splitOutput, func(str string) bool {
+		return str != ""
+	})
 
 	return splitOutput, nil
 }
@@ -101,6 +105,9 @@ func CheckCmdError(err error) error {
 	if CmdError, ok := err.(CmdError); ok {
 		switch CmdError.ExitCode {
 		case 0:
+			return nil
+		case 1:
+			// Note - Git errors, there is a section, but no keys.
 			return nil
 		case 5:
 			// Note - Ignore this error: Git config exit code if you try to access a section.key that does not exist

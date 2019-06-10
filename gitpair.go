@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
 	"log"
 	"os"
 
@@ -34,7 +32,6 @@ func main() {
 			Aliases: []string{"a"},
 			Usage:   "username <email>",
 			Action: func(c *cli.Context) error {
-				// actions.With(c.Args())
 				actions.Add(c.Args())
 
 				return nil
@@ -44,9 +41,10 @@ func main() {
 					return
 				}
 
-				for _, user := range getCollaborators() {
-					fmt.Println(user)
-				}
+				// Get
+				// for _, user := range getCollaborators() {
+				// 	fmt.Println(user)
+				// }
 			},
 		},
 		{
@@ -80,22 +78,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func getCollaborators() []string {
-	file, err := os.Open("collaborators.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	var lines []string
-
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-
-	return lines
 }

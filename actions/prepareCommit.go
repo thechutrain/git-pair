@@ -6,6 +6,10 @@ import (
 	"log"
 	"os"
 	"regexp"
+
+	"github.com/thechutrain/git-pair/gitconfig"
+
+	"github.com/thechutrain/git-pair/arrays"
 )
 
 // PrepareCommitMsg prepares the commit message
@@ -16,13 +20,14 @@ func PrepareCommitMsg(args []string) {
 
 	lines := readLines(fileName)
 
-	if !containsCoAuthor(lines) {
-		coauthors := []string{"Co-authored-by: 🤖 "} // TODO: get the coauthors
-		updateCommitMsg := addCoAuthors(lines, coauthors)
-		writeLines(fileName, updateCommitMsg)
+	pairs, _ := gitconfig.CurrPairs()
+	coauthors := arrays.Map(pairs, func(str string) string {
+		return "Co-authored-by: " + str
+	})
+	updateCommitMsg := addCoAuthors(lines, coauthors)
+	writeLines(fileName, updateCommitMsg)
 
-		// TODO: Print out possible co-authors so end-user knows who was added
-	}
+	// TODO: Print out possible co-authors so end-user knows who was added
 }
 
 // readLines - given the path to .git/COMMIT_EDITMSG, reads contents into a string slice
@@ -61,19 +66,13 @@ func writeLines(fileName string, lines []string) {
 	defer fileWrite.Close()
 }
 
-// containsCoAuthor - checks to see if commit message already contains content for Co-authored by line
-func containsCoAuthor(lines []string) bool {
-	for _, line := range lines {
-		match, _ := regexp.MatchString("(?i)^Co-authored-by:", line)
-		if match {
-			return true
-		}
-	}
-	return false
-}
-
 // addCoAuthors - adds coauthors to the commit message above the first commented block
 func addCoAuthors(lines []string, coauthors []string) []string {
+	lines = arrays.Filter(lines, func(str string) bool {
+		match, _ := regexp.MatchString("^Co-authored-by:", str)
+		return !match
+	})
+
 	// read from the bottom until there is no comment
 	i := 0
 

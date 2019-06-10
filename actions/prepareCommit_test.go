@@ -5,22 +5,22 @@ import (
 	"testing"
 )
 
-func TestContainsCoAuthors(t *testing.T) {
-	lines := []string{"This does not", "contain Co-authored-by"}
-	if containsCoAuthor(lines) {
-		t.Error("Lines without the co-author tag were reported to contain it")
-	}
+// func TestContainsCoAuthors(t *testing.T) {
+// 	lines := []string{"This does not", "contain Co-authored-by"}
+// 	if containsCoAuthor(lines) {
+// 		t.Error("Lines without the co-author tag were reported to contain it")
+// 	}
 
-	lines2 := []string{"This does contain", "Co-authored-by: cookie monster"}
-	if !containsCoAuthor(lines2) {
-		t.Error("Lines with the co-author tag were not reported to contain it")
-	}
+// 	lines2 := []string{"This does contain", "Co-authored-by: cookie monster"}
+// 	if !containsCoAuthor(lines2) {
+// 		t.Error("Lines with the co-author tag were not reported to contain it")
+// 	}
 
-	lines3 := []string{"This does contain", "Co-AuthoRED-By: cookie monster"}
-	if !containsCoAuthor(lines3) {
-		t.Error("Lines with the co-author tag were not reported to contain it")
-	}
-}
+// 	lines3 := []string{"This does contain", "Co-AuthoRED-By: cookie monster"}
+// 	if !containsCoAuthor(lines3) {
+// 		t.Error("Lines with the co-author tag were not reported to contain it")
+// 	}
+// }
 
 func TestDeepEqual(t *testing.T) {
 	lines := []string{"A", "B", "C"}

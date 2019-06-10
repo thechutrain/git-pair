@@ -70,6 +70,9 @@ func writeLines(fileName string, lines []string) {
 func addCoAuthors(lines []string, coauthors []string) []string {
 	lines = arrays.Filter(lines, func(str string) bool {
 		match, _ := regexp.MatchString("^Co-authored-by:", str)
+		if match {
+			fmt.Printf("Found match!: %s\n", str)
+		}
 		return !match
 	})
 

@@ -68,13 +68,20 @@ func writeLines(fileName string, lines []string) {
 
 // addCoAuthors - adds coauthors to the commit message above the first commented block
 func addCoAuthors(lines []string, coauthors []string) []string {
+	// Note: for gc --amend case. Remove possible stale data
+	re := regexp.MustCompile("(^Co-authored-by:)|(^# Added by git-pair)")
 	lines = arrays.Filter(lines, func(str string) bool {
-		match, _ := regexp.MatchString("^Co-authored-by:", str)
+		match := re.MatchString(str)
 		if match {
 			fmt.Printf("Found match!: %s\n", str)
 		}
 		return !match
 	})
+
+	// No co-authors case
+	if len(coauthors) == 0 {
+		return lines
+	}
 
 	// read from the bottom until there is no comment
 	i := 0

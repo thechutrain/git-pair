@@ -81,7 +81,9 @@ func makePrepareCommitHook() error {
 func Add(args cli.Args) error {
 	mustBeInitialized()
 
-	return gitconfig.AddPair(strings.Join(args, " "))
+	fmt.Printf("Args: %#v \n", args)
+
+	return gitconfig.AddPair(args)
 }
 
 // Remove - remove
@@ -98,7 +100,7 @@ func Remove(args cli.Args) error {
 func RemoveAll(args cli.Args) error {
 	mustBeInitialized()
 
-	_, cmdErr := gitconfig.RemoveAllPairs()
+	cmdErr := gitconfig.RemoveAllPairs()
 	gitconfig.CheckCmdError(cmdErr)
 	return cmdErr
 }

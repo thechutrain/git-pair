@@ -1,6 +1,7 @@
 package gitconfig
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -30,8 +31,8 @@ func CurrPairs() ([]string, error) {
 	coauthors := []string{}
 
 	exists, err := ContainsSection()
-	if CheckCmdError(err) != nil {
-		return coauthors, nil
+	if err != nil {
+		return coauthors, err
 	}
 
 	if !exists {
@@ -39,7 +40,9 @@ func CurrPairs() ([]string, error) {
 	}
 
 	output, err := RunGitConfigCmd("--get-all", "")
-	CheckCmdError(err)
+	if err != nil {
+		return coauthors, err
+	}
 
 	splitOutput := strings.Split(output, "\n")
 	splitOutput = arrays.Filter(splitOutput, func(str string) bool {
@@ -49,12 +52,44 @@ func CurrPairs() ([]string, error) {
 	return splitOutput, nil
 }
 
+func validatePairStr(rawArgs []string) error {
+	// TODO: validate the pairStr
+	// IDEA: could validate github handle via http request?
+	/* Valid inputs:
+	- githubhandle
+	- name <email>
+	*/
+
+	switch len(rawArgs) {
+	case 0:
+		return errors.New("Must provide at least one argument for adding a pair")
+	case 1:
+		if strings.TrimSpace(rawArgs[0]) == "" {
+			return errors.New("Must provide at least one argument for adding a pair")
+		}
+		rawUserName := rawArgs[0]
+		// TODO: look up this github username
+	// case 2: // Note: for username and email entered manually
+
+	default:
+
+	}
+
+	return nil
+}
+
 // AddPair adds a new coauthor line only if its unique
 // pairStr is in the format of "name <email>"
-func AddPair(pairStr string) error {
-	// TODO: validate pairStr
+func AddPair(rawArgs []string) error {
+	// Validate user input
+	err := validatePairStr(rawArgs)
+	if err != nil {
+		return err
+	}
+
+	pairStr := strings.Join(rawArgs, " ")
 	_, cmdErr := RunGitConfigCmd("--unset-all", pairStr) // Note: prevents the addition of  duplicate keys
-	if CheckCmdError(cmdErr) != nil {
+	if cmdErr != nil {
 		return cmdErr
 	}
 
@@ -89,9 +124,9 @@ func RemovePair(pairStr string) (bool, error) {
 }
 
 // RemoveAllPairs removes all the coauthors
-func RemoveAllPairs() (bool, error) {
+func RemoveAllPairs() error {
 	_, cmdErr := RunGitConfigCmd("--unset-all", "")
-	return false, cmdErr
+	return cmdErr
 }
 
 // CheckError returns a boolean of whether there was an error that should prevent you from proceeding or not

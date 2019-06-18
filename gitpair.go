@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/pkg/errors"
 	"github.com/thechutrain/git-pair/actions"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -16,6 +17,7 @@ func main() {
 		return
 	}
 
+	// Registers the cli package for autocompletion of bash commands
 	app := cli.NewApp()
 	app.EnableBashCompletion = true
 	app.Commands = []cli.Command{
@@ -30,9 +32,12 @@ func main() {
 		{
 			Name:    "add",
 			Aliases: []string{"a"},
-			Usage:   "username <email>",
+			Usage:   "GitHubHandle",
 			Action: func(c *cli.Context) error {
-				actions.Add(c.Args())
+				err := actions.Add(c.Args())
+				if err != nil {
+					log.Fatal(errors.Cause(err))
+				}
 
 				return nil
 			},
@@ -41,6 +46,7 @@ func main() {
 					return
 				}
 
+				// TODO: get a list of past collaborators! to populate the script
 				// Get
 				// for _, user := range getCollaborators() {
 				// 	fmt.Println(user)

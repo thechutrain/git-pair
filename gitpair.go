@@ -11,10 +11,10 @@ import (
 
 func main() {
 	// Note: prepare-commit-msg is a func called internally so we don't want to expose it to the cli
-	prepareCommit := len(os.Args) > 1 && os.Args[1] == "_prepare-commit-msg"
+	prepareCommit := len(os.Args) > 1 && os.Args[1] == "_modify-commit-msg"
 	if prepareCommit {
-		actions.PrepareCommitMsg(os.Args)
-		return
+		actions.ModifyCommitMsg(os.Args)
+	return
 	}
 
 	// Registers the cli package for autocompletion of bash commands

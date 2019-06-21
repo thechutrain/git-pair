@@ -4,6 +4,10 @@
 
 > Makes it easy to add co-authors to your project
 
+# Demo
+
+![demo](.notes/git-pair-gif.gif)
+
 # Installing
 
 ```
@@ -26,16 +30,9 @@ To initiate a pairing session just type:
 pair add GITHUB_USERNAME GITHUB_EMAIL
 ```
 
-To stop pairing with a single user:
-
-```
-pair remove [name]
-```
-
 To stop pairing with everyone:
 
 ```
-pair reset
 pair stop
 ```
 
@@ -69,7 +66,7 @@ Co-authored-by: pairpal <pair-pal@email.com>
 #      new file:   .gitignore¬
 #      modified:   actions/remove.go¬
 #      modified:   notes.md¬
-#      modified:   readme.md¬
+#      modified:   readme.md
 #
 # Changes not staged for commit:
 #     modified:   readme.md

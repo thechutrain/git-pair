@@ -14,13 +14,13 @@ import (
 // Init - creates the prepare-commit-msg hooks
 func Init(args cli.Args) error {
 	if !isInitialized() {
-		fmt.Printf("Initializing git prepare commit message hook ...\n")
-		_ = makePrepareCommitHook()
+		fmt.Printf("Initializing git commit message hook ...\n")
+		_ = makeCommitMessageHook()
 	} else if len(args) > 0 && args[0] == "force" {
-		fmt.Printf("Reinitializing git prepare commit message hook ... \n")
-		_ = makePrepareCommitHook()
+		fmt.Printf("Reinitializing git commit message hook ... \n")
+		_ = makeCommitMessageHook()
 	} else {
-		fmt.Printf("Already initialized. To remake the prepare commit msg hook, type: pair init force")
+		fmt.Printf("Already initialized. To remake the commit msg hook, type: pair init force")
 	}
 
 	return nil
@@ -28,10 +28,12 @@ func Init(args cli.Args) error {
 
 // isInitialized checks to see if the prepare-commit-msg hook exists
 func isInitialized() bool {
-	gitDir, cmdErr := gitconfig.GitDir()
-	gitconfig.CheckCmdError(cmdErr)
+	gitDir, err := gitconfig.GitDir()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	hookFile := gitDir + "/hooks/prepare-commit-msg"
+	hookFile := gitDir + "/hooks/commit-msg"
 
 	if _, err := os.Stat(hookFile); err == nil {
 		return true
@@ -54,24 +56,25 @@ func mustBeInitialized() {
 	}
 }
 
-func makePrepareCommitHook() error {
+func makeCommitMessageHook() error {
 	// Note: all the file permissions are 755
-	gitDir, cmdErr := gitconfig.GitDir()
-	gitconfig.CheckCmdError(cmdErr)
+	gitDir, err := gitconfig.GitDir()
+	if err != nil {
+		return err
+	}
 
-	hookFile := gitDir + "/hooks/prepare-commit-msg"
+	hookFile := gitDir + "/hooks/commit-msg"
 
 	hookScript := []byte(`#!/bin/sh
 	set -e
 
-	# Question: Can I alias gitpair command?
 	# Hook from git-pair 🍐
-	gitpair _prepare-commit-msg $@ #adds all of the arguments in bash
+	gitpair _modify-commit-msg $@ #adds all of the arguments in bash
 		`)
 
-	err := ioutil.WriteFile(hookFile, hookScript, 0755)
+	err = ioutil.WriteFile(hookFile, hookScript, 0755)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	return nil
@@ -81,8 +84,6 @@ func makePrepareCommitHook() error {
 func Add(args cli.Args) error {
 	mustBeInitialized()
 
-	fmt.Printf("Args: %#v \n", args)
-
 	return gitconfig.AddPair(args)
 }
 
@@ -90,19 +91,18 @@ func Add(args cli.Args) error {
 func Remove(args cli.Args) error {
 	mustBeInitialized()
 
-	_, cmdErr := gitconfig.RemovePair(strings.Join(args, " "))
-	gitconfig.CheckCmdError(cmdErr)
+	_, err := gitconfig.RemovePair(strings.Join(args, " "))
 
-	return cmdErr
+	return err
 }
 
 // RemoveAll - removes all
 func RemoveAll(args cli.Args) error {
 	mustBeInitialized()
 
-	cmdErr := gitconfig.RemoveAllPairs()
-	gitconfig.CheckCmdError(cmdErr)
-	return cmdErr
+	err := gitconfig.RemoveAllPairs()
+
+	return err
 }
 
 // Status - status status status status status status status status status status status
@@ -114,9 +114,9 @@ func Status(args cli.Args) error {
 	if len(pairs) > 0 {
 		// TODO: feature - print with column headers etc
 		fmt.Printf("Pairing with: \n\t" + strings.Join(pairs, "\n\t"))
-		fmt.Printf("\n\nType: \"git remove [name]\" ")
+		fmt.Printf("\n\nType: \"git remove [GitHub_Handle]\" ")
 	} else {
-		fmt.Printf("You are not currently pairing with anyone\nTo begin pairing with a new person type:\n\t\"git pair add [name]\"\n")
+		fmt.Printf("You are not currently pairing with anyone\nTo begin pairing with a new person type:\n\t\"git pair add [GitHub_Handle]\"\n")
 	}
 
 	return nil

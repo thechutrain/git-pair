@@ -114,9 +114,9 @@ func Status(args cli.Args) error {
 	if len(pairs) > 0 {
 		// TODO: feature - print with column headers etc
 		fmt.Printf("Pairing with: \n\t" + strings.Join(pairs, "\n\t"))
-		fmt.Printf("\n\nType: \"git remove [GitHub_Handle]\" ")
+		fmt.Printf("\n\nType: \"pair stop\" ")
 	} else {
-		fmt.Printf("You are not currently pairing with anyone\nTo begin pairing with a new person type:\n\t\"git pair add [GitHub_Handle]\"\n")
+		fmt.Printf("You are not currently pairing with anyone\nTo begin pairing with a new person type:\n\t\"pair add [GitHub_Handle]\"\n")
 	}
 
 	return nil

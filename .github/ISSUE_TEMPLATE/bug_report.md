@@ -19,6 +19,3 @@ What should happen?
 
 What happened.
 
-### Environment
-
-Run `gatsby info --clipboard` in your project directory and paste the output here.
